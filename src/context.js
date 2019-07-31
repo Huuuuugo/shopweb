@@ -9,20 +9,47 @@ const ProductConsumer = ProductContext.Consumer;
 
 export default class ProductProvider extends Component {
   state = {
-    products: storeProducts,
+    products: [],
     detailProduct: detailProduct
   };
-  handleDetail = () => {
-    console.log('detail');
+
+  componentDidMount() {
+    this.setProducts();
+  }
+
+  setProducts = () => {
+    let tempProducts = [];
+    storeProducts.forEach(item => {
+      const singleItem = { ...item };
+      tempProducts = [...tempProducts, singleItem];
+    });
+    this.setState(() => {
+      return { products: tempProducts };
+    });
   };
-  addToCart = () => {
-    console.log('Cart');
+
+  getItem = id => {
+    const product = this.state.products.find(item => item.id === id);
+    return product;
   };
+
+  handleDetail = id => {
+    const product = this.getItem(id);
+    this.setState(() => {
+      return { detailProduct: product };
+    });
+  };
+  addToCart = id => {
+    console.log(`add to cart.id is ${id}`);
+  };
+
   render() {
     return (
       <ProductContext.Provider
         value={{
-          ...this.state
+          ...this.state,
+          handleDetail: this.handleDetail,
+          addToCart: this.addToCart
         }}
       >
         {this.props.children}
